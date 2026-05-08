@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Preview Editor</title>
+    <style>
+        :root {
+            --header-bg: #1e1e2e;
+            --editor-bg: #282c34;
+            --preview-bg: #ffffff;
+            --text-color: #abb2bf;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: var(--editor-bg);
+        }
+
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #editor {
+            flex: 1;
+            background: var(--editor-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 20px;
+            font-size: 16px;
+            outline: none;
+            resize: none;
+            border-right: 2px solid #3e4451;
+        }
+
+        #preview {
+            flex: 1;
+            background: var(--preview-bg);
+            color: black;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .badge {
+            background: #61afef;
+            color: #282c34;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Preview ichidagi HTML elementlar stili */
+        #preview h1 { border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        #preview blockquote { border-left: 4px solid #61afef; padding-left: 15px; color: #555; }
+    </style>
+</head>
+<body>
+
+<header>
+    <span>Smart Editor <span class="badge">LIVE</span></span>
+    <button onclick="clearEditor()" style="background:#e06c75; border:none; color:white; padding:5px 10px; border-radius:4px; cursor:pointer;">Tozalash</button>
+</header>
+
+<div class="main-container">
+    <textarea id="editor" placeholder="HTML yoki matn yozing..." oninput="updatePreview()"></textarea>
+    <div id="preview"></div>
+</div>
+
+<script>
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+
+    // Dastlabki matn
+    const defaultText = `<h1>Salom Dunyo!</h1>
+<p>Bu yerda yozgan har bir kodingiz <b>o'ng tomonda</b> darhol ko'rinadi.</p>
+<blockquote>Dasturlash - bu sehrgarlikning zamonaviy ko'rinishidir.</blockquote>
+<ul>
+  <li>HTML teglari ishlaydi</li>
+  <li>CSS stillarini inline yozish mumkin</li>
+</ul>`;
+
+    editor.value = defaultText;
+
+    function updatePreview() {
+        const content = editor.value;
+        // Xavfsizlik uchun script teglarini o'chirib tashlash (ixtiyoriy)
+        preview.innerHTML = content;
+        
+        // Ma'lumotni saqlab qo'yish
+        localStorage.setItem('live_editor_content', content);
+    }
+
+    function clearEditor() {
+        if(confirm("Hamma narsani o'chirib tashlamoqchimisiz?")) {
+            editor.value = '';
+            updatePreview();
+        }
+    }
+
+    // Brauzer yopilib ochilganda ma'lumotni tiklash
+    window.onload = () => {
+        const saved = localStorage.getItem('live_editor_content');
+        if (saved) {
+            editor.value = saved;
+        }
+        updatePreview();
+    };
+</script>
+
+</body>
+</html>
